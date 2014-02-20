@@ -16,10 +16,25 @@ describe Account do
       expect(a.transactions).to eq([0])
     end
 
-    it "validates the account number" do
-      Account.any_instance.should_receive(:validate_number).with(valid_acct_number)
+    # I originally wrote the below test as a chance to use a
+    # message expectation in this spec, but on second thought
+    # it's a bad test! Here's why:
+    #
+    # I originally didn't realize it, but #validate_number is
+    # a private method and testing just the message expectation
+    # isn't enough. #initialize provides the only chance to test
+    # #validate_number, so we need to add assertations that validate
+    # the implementation of #validate_number (not just that it was
+    # called)
+    #
+    # it "validates the account number" do
+    #   Account.any_instance.should_receive(:validate_number)
+    #                                .with(valid_acct_number)
+    #   Account.new(valid_acct_number)
+    # end
 
-      Account.new(valid_acct_number)
+    it "raises an InvalidAccountNumberError exception for invalid account numbers" do
+      expect{Account.new("12")}.to raise_exception(InvalidAccountNumberError)
     end
   end
 
